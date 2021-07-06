@@ -128,8 +128,20 @@ public class QueryUtils {
                 JSONObject currentVolume = items.getJSONObject(i);
                 JSONObject volumeInfo = currentVolume.getJSONObject("volumeInfo");
                 String title = volumeInfo.getString("title");
-                String authors = volumeInfo.getString("authors");
-                Volume volume = new Volume(title, authors);
+
+                // Extracting authors information
+                StringBuilder volumeAuthors = new StringBuilder();
+                JSONArray authors = volumeInfo.getJSONArray("authors");
+                int j = 0;
+                while (j < authors.length()) {
+                    Object author = authors.get(j);
+                    volumeAuthors.append(author.toString());
+                    j++;
+                    if (j != authors.length()) {
+                        volumeAuthors.append(", ");
+                    }
+                }
+                Volume volume = new Volume(title, volumeAuthors.toString());
                 volumes.add(volume);
             }
             return volumes;
