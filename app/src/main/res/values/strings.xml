@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Book Listing</string>
+    <string name="hint_search">Search</string>
+    <string name="textView_search_results">Search Results</string>
+    <string name="textView_title">Title</string>
+    <string name="textView_author_name">Author Name</string>
 </resources>

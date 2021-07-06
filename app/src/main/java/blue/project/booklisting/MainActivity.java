@@ -13,7 +13,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Disable App/Action bar
+        // Hide App/Action bar
         getSupportActionBar().hide();
 
         // Set delay for splash screen
