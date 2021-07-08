@@ -1,6 +1,10 @@
 package blue.project.booklisting;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.loader.app.LoaderManager;
+import androidx.loader.content.Loader;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,10 +15,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class BookListingActivity extends AppCompatActivity {
+public class BookListingActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Volume>> {
     private Button searchButton;
     private TextView searchResultsTextView;
     private EditText searchEditText;
@@ -23,6 +29,8 @@ public class BookListingActivity extends AppCompatActivity {
 
     // Request URL
     private final String REQUEST_URL = "https://www.googleapis.com/books/v1/volumes?q=android&maxResults=10";
+
+    private final int LOADER_ID = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,30 +54,32 @@ public class BookListingActivity extends AppCompatActivity {
 
         // Set onClickListener on searchButton
         searchButton.setOnClickListener(view -> {
-            // Make searchResultsTextView visible
-            searchResultsTextView.setVisibility(View.VISIBLE);
-
-            // Initialize and start AsyncTask
-            VolumesAsyncTask volumesAsyncTask = new VolumesAsyncTask();
-            volumesAsyncTask.execute(REQUEST_URL);
+            // Start Loader Manager
+            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
         });
     }
 
-    private class VolumesAsyncTask extends AsyncTask<String, Void, List<Volume>> {
-        @Override
-        protected List<Volume> doInBackground(String... strings) {
-            String url = strings[0];
-            return QueryUtils.getData(url);
-        }
+    @NonNull
+    @NotNull
+    @Override
+    public Loader<List<Volume>> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+        return new VolumeAsyncTaskLoader(this, REQUEST_URL);
+    }
 
-        @Override
-        protected void onPostExecute(List<Volume> volumes) {
-            // Clear previous data
-            mVolumeAdapter.clear();
+    @Override
+    public void onLoadFinished(@NonNull @NotNull Loader<List<Volume>> loader, List<Volume> data) {
+        // Make searchResultsTextView visible
+        searchResultsTextView.setVisibility(View.VISIBLE);
+        // Clear previous data
+        mVolumeAdapter.clear();
 
-            if (volumes != null) {
-                mVolumeAdapter.addAll(volumes);
-            }
+        if (data != null) {
+            mVolumeAdapter.addAll(data);
         }
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull @NotNull Loader<List<Volume>> loader) {
+        mVolumeAdapter.clear();
     }
 }
