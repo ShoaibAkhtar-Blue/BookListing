@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -28,8 +29,9 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     private VolumeAdapter mVolumeAdapter;
 
     // Request URL
-    private final String REQUEST_URL = "https://www.googleapis.com/books/v1/volumes?q=android&maxResults=10";
+    private String requestUrl;
 
+    // Loader id
     private final int LOADER_ID = 0;
 
     @Override
@@ -54,8 +56,21 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
 
         // Set onClickListener on searchButton
         searchButton.setOnClickListener(view -> {
-            // Start Loader Manager
-            getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+            String userInput = searchEditText.getText().toString();
+            String searchTerms = extractSearchTerms(userInput);
+            if (searchTerms != null && !searchTerms.equals("")) {
+                requestUrl = makeRequestUrl(searchTerms);
+
+                //Test Code
+                //Toast.makeText(this, requestUrl, Toast.LENGTH_SHORT).show();
+
+                // Start Loader Manager
+                getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+                // Restart Loader
+                getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
+            } else {
+                Toast.makeText(this, "Enter topic for search", Toast.LENGTH_SHORT).show();
+            }
         });
     }
 
@@ -63,7 +78,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     @NotNull
     @Override
     public Loader<List<Volume>> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
-        return new VolumeAsyncTaskLoader(this, REQUEST_URL);
+        return new VolumeAsyncTaskLoader(this, requestUrl);
     }
 
     @Override
@@ -80,6 +95,24 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public void onLoaderReset(@NonNull @NotNull Loader<List<Volume>> loader) {
-        mVolumeAdapter.clear();
+        mVolumeAdapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Extract search terms
+     * @param inputString received from editText_search
+     * @return Search terms
+     */
+    private String extractSearchTerms(String inputString) {
+        return inputString.trim().replace(" ", "+").toLowerCase();
+    }
+
+    /**
+     * Create a request url by including search terms
+     * @param searchTerms
+     * @return Request url
+     */
+    private String makeRequestUrl(String searchTerms) {
+        return "https://www.googleapis.com/books/v1/volumes?q=" + searchTerms + "&maxResults=10";
     }
 }
