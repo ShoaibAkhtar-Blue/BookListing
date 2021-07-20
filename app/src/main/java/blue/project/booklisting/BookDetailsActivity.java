@@ -1,5 +1,6 @@
 package blue.project.booklisting;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -43,25 +45,27 @@ public class BookDetailsActivity extends AppCompatActivity {
         initViews();
 
         // Get intent and data
-        //Intent intent = getIntent();
-        //Volume currentVolume = (Volume) intent.getSerializableExtra("currentVolume");
-
-        /*
-        String bookTitle = intent.getStringExtra("Book Title");
-        String bookAuthors = intent.getStringExtra("Book Authors");
-
-         */
+        Intent intent = getIntent();
+        Volume currentVolume = (Volume) intent.getSerializableExtra("currentVolume");
 
         // Set data to views
-        /*
         bookTitleTextView.setText(currentVolume.getTitle());
         bookAuthorsTextView.setText(currentVolume.getAuthors());
         publisherTextView.setText(currentVolume.getPublisher());
         publishedDateTextView.setText(currentVolume.getPublishedDate());
         pageCountTextView.setText(String.valueOf(currentVolume.getPageCount()));
         descriptionTextView.setText(currentVolume.getDescription());
+    }
 
-         */
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

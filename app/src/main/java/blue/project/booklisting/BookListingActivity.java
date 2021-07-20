@@ -66,8 +66,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
             if (searchTerms != null && !searchTerms.equals("")) {
                 requestUrl = makeRequestUrl(searchTerms);
 
-                //Test Code
-                //Toast.makeText(this, requestUrl, Toast.LENGTH_SHORT).show();
+                // Log information about request URL
                 Log.i(LOG_TAG, requestUrl);
 
                 // Start Loader Manager
@@ -86,23 +85,9 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
         // Set onItemClickListener on volumesListview
         volumesListView.setOnItemClickListener((adapterView, view, i, l) -> {
             Volume currentVolume = mVolumeAdapter.getItem(i);
-            /*
-            String bookTitle = currentVolume.getTitle();
-            String bookAuthors = currentVolume.getAuthors();
-            String imageUrl = currentVolume.getImageUrl();
-
-             */
-
-            //Intent intent = new Intent(getApplicationContext(), BookDetailsActivity.class);
-            //intent.putExtra("currentVolume", currentVolume);
-
-            /*
-            intent.putExtra("Book Title", bookTitle);
-            intent.putExtra("Book Authors", bookAuthors);
-            intent.putExtra("Book ImageUrl", imageUrl);
-
-             */
-            //startActivity(intent);
+            Intent intent = new Intent(getApplicationContext(), BookDetailsActivity.class);
+            intent.putExtra("currentVolume", currentVolume);
+            startActivity(intent);
         });
     }
 
@@ -110,6 +95,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     @NotNull
     @Override
     public Loader<List<Volume>> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+        // Log information
         Log.i(LOG_TAG, "Loader is created");
 
         return new VolumeAsyncTaskLoader(this, requestUrl);
@@ -117,6 +103,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
 
     @Override
     public void onLoadFinished(@NonNull @NotNull Loader<List<Volume>> loader, List<Volume> data) {
+        // Log information
         Log.i(LOG_TAG, "Loader is finished");
 
         // Make searchResultsTextView visible
@@ -125,6 +112,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
         mVolumeAdapter.clear();
 
         if (data != null) {
+            // Log information
             Log.i(LOG_TAG, "data found");
 
             mVolumeAdapter.addAll(data);
