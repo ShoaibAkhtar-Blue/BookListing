@@ -6,9 +6,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -22,6 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class BookListingActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Volume>> {
+    private final String LOG_TAG = BookListingActivity.class.getSimpleName();
+
     private Button searchButton;
     private TextView searchResultsTextView;
     private EditText searchEditText;
@@ -63,14 +68,41 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
 
                 //Test Code
                 //Toast.makeText(this, requestUrl, Toast.LENGTH_SHORT).show();
+                Log.i(LOG_TAG, requestUrl);
 
                 // Start Loader Manager
                 getSupportLoaderManager().initLoader(LOADER_ID, null, this);
                 // Restart Loader
+                /**
+                 * Restart Loader
+                 * When the user tries to search another term or topic then it restarts the loader.
+                 */
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, this);
             } else {
                 Toast.makeText(this, "Enter topic for search", Toast.LENGTH_SHORT).show();
             }
+        });
+
+        // Set onItemClickListener on volumesListview
+        volumesListView.setOnItemClickListener((adapterView, view, i, l) -> {
+            Volume currentVolume = mVolumeAdapter.getItem(i);
+            /*
+            String bookTitle = currentVolume.getTitle();
+            String bookAuthors = currentVolume.getAuthors();
+            String imageUrl = currentVolume.getImageUrl();
+
+             */
+
+            //Intent intent = new Intent(getApplicationContext(), BookDetailsActivity.class);
+            //intent.putExtra("currentVolume", currentVolume);
+
+            /*
+            intent.putExtra("Book Title", bookTitle);
+            intent.putExtra("Book Authors", bookAuthors);
+            intent.putExtra("Book ImageUrl", imageUrl);
+
+             */
+            //startActivity(intent);
         });
     }
 
@@ -78,24 +110,30 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     @NotNull
     @Override
     public Loader<List<Volume>> onCreateLoader(int id, @Nullable @org.jetbrains.annotations.Nullable Bundle args) {
+        Log.i(LOG_TAG, "Loader is created");
+
         return new VolumeAsyncTaskLoader(this, requestUrl);
     }
 
     @Override
     public void onLoadFinished(@NonNull @NotNull Loader<List<Volume>> loader, List<Volume> data) {
+        Log.i(LOG_TAG, "Loader is finished");
+
         // Make searchResultsTextView visible
         searchResultsTextView.setVisibility(View.VISIBLE);
         // Clear previous data
         mVolumeAdapter.clear();
 
         if (data != null) {
+            Log.i(LOG_TAG, "data found");
+
             mVolumeAdapter.addAll(data);
         }
     }
 
     @Override
     public void onLoaderReset(@NonNull @NotNull Loader<List<Volume>> loader) {
-        mVolumeAdapter.notifyDataSetChanged();
+        mVolumeAdapter.clear();
     }
 
     /**

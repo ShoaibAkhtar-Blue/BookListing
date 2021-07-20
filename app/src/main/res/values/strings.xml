@@ -4,4 +4,8 @@
     <string name="textView_search_results">Search Results</string>
     <string name="textView_title">Title</string>
     <string name="textView_author_name">Author Name</string>
+    <string name="textView_publisher">Publisher</string>
+    <string name="textView_publishedDate">Published Date</string>
+    <string name="textView_pageCount">Page Count</string>
+    <string name="textView_description">Description</string>
 </resources>

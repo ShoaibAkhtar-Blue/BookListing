@@ -2,7 +2,9 @@ package blue.project.booklisting;
 
 import android.util.Log;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -12,12 +14,12 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class QueryUtils {
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
+    private static final String MESSAGE_MISSING_INFORMATION = "No information available";
 
     /**
      * Private constructor
@@ -124,30 +126,92 @@ public class QueryUtils {
         try {
             JSONObject root = new JSONObject(jsonResponse);
             JSONArray items = root.getJSONArray("items");
+            // Log information
+            Log.i(LOG_TAG, "Items received: " + items.length());
+
             for (int i = 0; i < items.length(); i++) {
                 JSONObject currentVolume = items.getJSONObject(i);
                 JSONObject volumeInfo = currentVolume.getJSONObject("volumeInfo");
-                String title = volumeInfo.getString("title");
 
-                // Extracting authors information
-                StringBuilder volumeAuthors = new StringBuilder();
-                JSONArray authors = volumeInfo.getJSONArray("authors");
-                int j = 0;
-                while (j < authors.length()) {
-                    Object author = authors.get(j);
-                    volumeAuthors.append(author.toString());
-                    j++;
-                    if (j != authors.length()) {
-                        volumeAuthors.append(", ");
-                    }
-                }
-                Volume volume = new Volume(title, volumeAuthors.toString());
+                // Extract title
+                String title = extractInformation(volumeInfo, "title");
+
+                // Extract authors
+                String authors = extractAuthors(volumeInfo);
+
+                // Extract publisher
+                String publisher = extractInformation(volumeInfo, "publisher");
+
+                // Extract published date
+                String publishedDate = extractInformation(volumeInfo, "publishedDate");
+
+                // Extract description
+                String description = extractInformation(volumeInfo, "description");
+
+                //Extract page count
+                int pageCount = extractInformation(volumeInfo, "pageCount", 0);
+
+                // Extract info link
+                String infoLink = extractInformation(volumeInfo, "infoLink");
+
+                Volume volume = new Volume(title, authors, publisher, publishedDate, description, pageCount, infoLink);
                 volumes.add(volume);
             }
             return volumes;
         } catch (Exception exception) {
             Log.e(LOG_TAG, exception.getMessage());
             return null;
+        }
+    }
+
+    /**
+     * Extract volume authors for JSON object
+     * @param jsonObject
+     * @return authors
+     */
+    private static String extractAuthors(@NotNull JSONObject jsonObject) {
+        try {
+            JSONArray authors = jsonObject.getJSONArray("authors");
+            StringBuilder volumeAuthors = new StringBuilder();
+            int j = 0;
+            while (j < authors.length()) {
+                Object author = authors.get(j);
+                volumeAuthors.append(author.toString());
+                j++;
+                if (j != authors.length()) {
+                    volumeAuthors.append(", ");
+                }
+            }
+            return volumeAuthors.toString();
+        } catch (JSONException jsonException) {
+            // Log information about exception
+            Log.e(LOG_TAG, "Exception in extracting authors: " + jsonException.getMessage());
+            return MESSAGE_MISSING_INFORMATION;
+        }
+    }
+
+    /**
+     * Extract information from JSON object
+     * @param jsonObject
+     * @param information required
+     * @return information
+     */
+    private static String extractInformation(@NotNull JSONObject jsonObject, @NotNull String information) {
+        try {
+            return jsonObject.getString(information);
+        } catch (JSONException jsonException) {
+            // Log information about exception
+            Log.e(LOG_TAG, "Exception in extracting information: " + jsonException.getMessage());
+            return MESSAGE_MISSING_INFORMATION;
+        }
+    }
+    private static int extractInformation(@NotNull JSONObject jsonObject, @NotNull String information, int defaultValue) {
+        try {
+            return jsonObject.getInt(information);
+        } catch (JSONException jsonException) {
+            // Log information about exception
+            Log.e(LOG_TAG, "Exception in extracting information: " + jsonException.getMessage());
+            return defaultValue;
         }
     }
 }
