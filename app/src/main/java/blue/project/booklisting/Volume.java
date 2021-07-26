@@ -9,16 +9,16 @@ public class Volume implements Serializable {
     private String publishedDate;
     private String description;
     private int pageCount;
-    private String infoLink;
+    private String canonicalVolumeLink;
 
-    public Volume(String title, String authors, String publisher, String publishedDate, String description, int pageCount, String infoLink) {
+    public Volume(String title, String authors, String publisher, String publishedDate, String description, int pageCount, String canonicalVolumeLink) {
         this.title = title;
         this.authors = authors;
         this.publisher = publisher;
         this.publishedDate = publishedDate;
         this.description = description;
         this.pageCount = pageCount;
-        this.infoLink = infoLink;
+        this.canonicalVolumeLink = canonicalVolumeLink;
     }
 
     public String getTitle() {
@@ -45,7 +45,7 @@ public class Volume implements Serializable {
         return pageCount;
     }
 
-    public String getInfoLink() {
-        return infoLink;
+    public String getCanonicalVolumeLink() {
+        return canonicalVolumeLink;
     }
 }

@@ -204,6 +204,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
         try {
             mData = (List<Volume>) savedInstanceState.getSerializable("data");
             mVolumeAdapter.addAll(mData);
+            searchResultsTextView.setVisibility(View.VISIBLE);
         } catch (Exception e) {
             // Log exception information
             Log.e(LOG_TAG, "Exception in casting: " + e.getMessage());

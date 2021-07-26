@@ -11,4 +11,5 @@
     <string name="textView_info">Information</string>
     <string name="message_no_network">No Network Connection</string>
     <string name="message_no_data">No Book Available</string>
+    <string name="button_book_preview">Book Preview</string>
 </resources>

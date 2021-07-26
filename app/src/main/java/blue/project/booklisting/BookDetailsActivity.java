@@ -1,24 +1,15 @@
 package blue.project.booklisting;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
-import android.widget.ImageView;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 
 public class BookDetailsActivity extends AppCompatActivity {
     private final String LOG_TAG = BookDetailsActivity.class.getSimpleName();
@@ -29,6 +20,8 @@ public class BookDetailsActivity extends AppCompatActivity {
     private TextView publishedDateTextView;
     private TextView pageCountTextView;
     private TextView descriptionTextView;
+    private Button bookPreviewButton;
+    private String canonicalVolumeLink;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +48,21 @@ public class BookDetailsActivity extends AppCompatActivity {
         publishedDateTextView.setText(currentVolume.getPublishedDate());
         pageCountTextView.setText(String.valueOf(currentVolume.getPageCount()));
         descriptionTextView.setText(currentVolume.getDescription());
+
+        // Set onClickListener on Book Preview button
+        bookPreviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // Get book info link
+                canonicalVolumeLink = currentVolume.getCanonicalVolumeLink();
+                // Convert info link into uri
+                Uri bookUri = Uri.parse(canonicalVolumeLink);
+
+                // Create Intent and pass Uri
+                Intent bookPreviewIntent = new Intent(Intent.ACTION_VIEW, bookUri);
+                startActivity(bookPreviewIntent);
+            }
+        });
     }
 
     @Override
@@ -79,5 +87,6 @@ public class BookDetailsActivity extends AppCompatActivity {
         publishedDateTextView = findViewById(R.id.textView_publishedDate);
         pageCountTextView = findViewById(R.id.textView_pageCount);
         descriptionTextView = findViewById(R.id.textView_description);
+        bookPreviewButton = findViewById(R.id.button_book_preview);
     }
 }

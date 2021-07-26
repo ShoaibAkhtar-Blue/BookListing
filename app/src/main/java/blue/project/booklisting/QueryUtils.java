@@ -152,9 +152,9 @@ public class QueryUtils {
                 int pageCount = extractInformation(volumeInfo, "pageCount", 0);
 
                 // Extract info link
-                String infoLink = extractInformation(volumeInfo, "infoLink");
+                String canonicalVolumeLink = extractInformation(volumeInfo, "canonicalVolumeLink");
 
-                Volume volume = new Volume(title, authors, publisher, publishedDate, description, pageCount, infoLink);
+                Volume volume = new Volume(title, authors, publisher, publishedDate, description, pageCount, canonicalVolumeLink);
                 volumes.add(volume);
             }
             return volumes;
