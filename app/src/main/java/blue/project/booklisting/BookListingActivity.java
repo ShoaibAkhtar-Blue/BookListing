@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +36,7 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     private EditText searchEditText;
     private ListView volumesListView;
     private VolumeAdapter mVolumeAdapter;
+    private List<Volume> mData;
     private View emptyView;
     private ImageView infoImageView;
     private TextView infoTextView;
@@ -145,6 +147,8 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
             // Log information
             Log.i(LOG_TAG, "data found");
 
+            mData = data;
+
             // Make searchResultsTextView visible
             searchResultsTextView.setVisibility(View.VISIBLE);
 
@@ -179,5 +183,31 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
      */
     private String makeRequestUrl(String searchTerms) {
         return "https://www.googleapis.com/books/v1/volumes?q=" + searchTerms + "&maxResults=10";
+    }
+
+    /**
+     * Store data in the {@link Bundle} if the user rotates the device
+     * @param outState
+     */
+    @Override
+    protected void onSaveInstanceState(@NonNull @NotNull Bundle outState) {
+        outState.putSerializable("data", (Serializable) mData);
+        super.onSaveInstanceState(outState);
+    }
+
+    /**
+     * Resotre the data
+     * @param savedInstanceState
+     */
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        try {
+            mData = (List<Volume>) savedInstanceState.getSerializable("data");
+            mVolumeAdapter.addAll(mData);
+        } catch (Exception e) {
+            // Log exception information
+            Log.e(LOG_TAG, "Exception in casting: " + e.getMessage());
+        }
+        super.onRestoreInstanceState(savedInstanceState);
     }
 }
