@@ -7,6 +7,8 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,6 +17,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +35,9 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
     private EditText searchEditText;
     private ListView volumesListView;
     private VolumeAdapter mVolumeAdapter;
+    private View emptyView;
+    private ImageView infoImageView;
+    private TextView infoTextView;
 
     // Request URL
     private String requestUrl;
@@ -49,15 +55,41 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
         searchButton = findViewById(R.id.button_search);
         searchResultsTextView = findViewById(R.id.textView_search_results);
         volumesListView = findViewById(R.id.listView_volums);
-
-        // Make searchResultsTextView invisible
-        searchResultsTextView.setVisibility(View.INVISIBLE);
+        emptyView = findViewById(R.id.empty_view);
+        infoImageView = findViewById(R.id.imageView_info);
+        infoTextView = findViewById(R.id.textView_info);
 
         // Initialize adapter
         mVolumeAdapter = new VolumeAdapter(this, new ArrayList<>());
 
         // Set adapter to ListView
         volumesListView.setAdapter(mVolumeAdapter);
+
+        // Set empty view to ListView
+        volumesListView.setEmptyView(emptyView);
+
+        // Check network status
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if (activeNetwork != null && activeNetwork.isConnectedOrConnecting()) {
+            // Make searchResultsTextView invisible
+            searchResultsTextView.setVisibility(View.INVISIBLE);
+            // Make infoImageView invisible
+            infoImageView.setVisibility(View.INVISIBLE);
+            // Make infoTextView invisible
+            infoTextView.setVisibility(View.INVISIBLE);
+        } else {
+            // Make everything invisible except infoImageView and infoTextView
+            searchEditText.setVisibility(View.INVISIBLE);
+            searchButton.setVisibility(View.INVISIBLE);
+            searchResultsTextView.setVisibility(View.INVISIBLE);
+
+            // Make infoImageView visible
+            infoImageView.setVisibility(View.VISIBLE);
+            // Make infoTextView visible
+            infoTextView.setVisibility(View.VISIBLE);
+            infoTextView.setText(R.string.message_no_network);
+        }
 
         // Set onClickListener on searchButton
         searchButton.setOnClickListener(view -> {
@@ -106,8 +138,6 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
         // Log information
         Log.i(LOG_TAG, "Loader is finished");
 
-        // Make searchResultsTextView visible
-        searchResultsTextView.setVisibility(View.VISIBLE);
         // Clear previous data
         mVolumeAdapter.clear();
 
@@ -115,7 +145,16 @@ public class BookListingActivity extends AppCompatActivity implements LoaderMana
             // Log information
             Log.i(LOG_TAG, "data found");
 
+            // Make searchResultsTextView visible
+            searchResultsTextView.setVisibility(View.VISIBLE);
+
             mVolumeAdapter.addAll(data);
+        } else {
+            // Log information
+            Log.i(LOG_TAG, "No data");
+
+            // Make searchResultsTextView invisible
+            searchResultsTextView.setVisibility(View.INVISIBLE);
         }
     }
 

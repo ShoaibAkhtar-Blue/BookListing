@@ -8,4 +8,7 @@
     <string name="textView_publishedDate">Published Date</string>
     <string name="textView_pageCount">Page Count</string>
     <string name="textView_description">Description</string>
+    <string name="textView_info">Information</string>
+    <string name="message_no_network">No Network Connection</string>
+    <string name="message_no_data">No Book Available</string>
 </resources>
