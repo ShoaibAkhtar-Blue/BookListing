@@ -9,7 +9,11 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Book Listing"
+        android:drawableTop="@drawable/ic_round_library_books_24"
+        android:fontFamily="@font/roboto_light"
+        android:gravity="center_vertical"
+        android:text="@string/app_name"
+        android:textAlignment="center"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
